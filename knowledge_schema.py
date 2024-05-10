@@ -49,24 +49,24 @@ def create_enhanced_ontology():
         
         
         
-        "ID": (pub.Keyword, XSD.string),
-        "name": (pub.Keyword, XSD.string),  
+        "keyword_ID": (pub.Keyword, XSD.string),
+        "keyword_name": (pub.Keyword, XSD.string),  
         "domain": (pub.Keyword, XSD.string),
         
         "paperId": (pub.Paper, XSD.string),
-        "title": (pub.Paper, XSD.string),
+        "paper_title": (pub.Paper, XSD.string),
         "abstract": (pub.Paper, XSD.string),
-        "pages": (pub.Paper, XSD.string),
+        "paper_pages": (pub.Paper, XSD.string),
         "DOI": (pub.Paper,XSD.string),
-        "link": (pub.Paper,XSD.string),
+        "paper_link": (pub.Paper,XSD.string),
         "citationCount": (pub.Paper, XSD.integer),
-        "date": (pub.Paper, XSD.date),
+        "paper_date": (pub.Paper, XSD.date),
         
         
         "authorId": (pub.Author, XSD.string),
-        "name": (pub.Author, XSD.string), 
-        "email": (pub.Author, XSD.string), 
-        "department": (pub.Author, XSD.string), 
+        "author_name": (pub.Author, XSD.string), 
+        "author_email": (pub.Author, XSD.string), 
+        "author_department": (pub.Author, XSD.string), 
         
                 
         "OrganizationID": (pub.Organization, XSD.string),
@@ -74,33 +74,33 @@ def create_enhanced_ontology():
         "affiliationType": (pub.Organization, XSD.string),
         
         
-        "publicationId": (pub.Conference, XSD.string),
-        "name": (pub.Conference, XSD.string),
-        "year": (pub.Conference, XSD.integer),
-        "venue": (pub.Conference, XSD.string),
-        "issn": (pub.Conference, XSD.integer),
-        "url": (pub.Conference, XSD.string),
-        "edition": (pub.Conference, XSD.integer),
+        "conf_publicationId": (pub.Conference, XSD.string),
+        "conf_name": (pub.Conference, XSD.string),
+        "conf_year": (pub.Conference, XSD.integer),
+        "conf_venue": (pub.Conference, XSD.string),
+        "conf_issn": (pub.Conference, XSD.integer),
+        "conf_url": (pub.Conference, XSD.string),
+        "conf_edition": (pub.Conference, XSD.integer),
         
         
-        "publicationId": (pub.Journal, XSD.string),
+        "jour_publicationId": (pub.Journal, XSD.string),
         "publicationType": (pub.Journal, XSD.string),
-        "name": (pub.Journal, XSD.string),
-        "venue": (pub.Journal, XSD.string),
-        "year": (pub.Journal, XSD.integer),
-        "issn": (pub.Journal, XSD.integer),
-        "url": (pub.Journal, XSD.string),
-        "volume": (pub.Journal, XSD.integer),
+        "jour_name": (pub.Journal, XSD.string),
+        "jour_venue": (pub.Journal, XSD.string),
+        "jour_year": (pub.Journal, XSD.integer),
+        "jour_issn": (pub.Journal, XSD.integer),
+        "jour_url": (pub.Journal, XSD.string),
+        "jour_volume": (pub.Journal, XSD.integer),
         
         
        
-        "publicationId": (pub.Workshop, XSD.string),
-        "name": (pub.Workshop, XSD.string),
-        "year": (pub.Workshop, XSD.integer),
-        "venue": (pub.Workshop, XSD.string), 
-        "issn": (pub.Workshop, XSD.integer),
-        "url": (pub.Workshop, XSD.string),
-        "edition": (pub.Workshop, XSD.integer),
+        "work_publicationId": (pub.Workshop, XSD.string),
+        "work_name": (pub.Workshop, XSD.string),
+        "work_year": (pub.Workshop, XSD.integer),
+        "work_venue": (pub.Workshop, XSD.string), 
+        "work_issn": (pub.Workshop, XSD.integer),
+        "work_url": (pub.Workshop, XSD.string),
+        "work_edition": (pub.Workshop, XSD.integer),
         
          
         "reviewerId": (pub.Reviewer, XSD.string),
@@ -111,7 +111,8 @@ def create_enhanced_ontology():
     }
 
     for prop, (dom, rng) in properties.items():
-        p = URIRef(pub[prop])
+        p = URIRef(f"{str(pub)}{prop}")  
+        # p = URIRef(pub[prop])
         g.add((p, RDF.type, RDF.Property))
         g.add((p, RDFS.domain, dom))
         g.add((p, RDFS.range, rng))
