@@ -16,9 +16,8 @@ def create_enhanced_ontology():
         pub.Event, pub.Workshop, pub.Conference,
         pub.Person, pub.Author, pub.Reviewer,
         pub.Establishment, pub.Organization,
-        pub.Keyword
+        pub.Keyword, pub.CommitteeMember, pub.Chair, pub.Editor,
     ]
-   
     
     # Add classes to the graph
     for cls in classes:
@@ -33,6 +32,9 @@ def create_enhanced_ontology():
     g.add((pub.Workshop, RDFS.subClassOf, pub.Event))
     g.add((pub.Conference, RDFS.subClassOf, pub.Event))
     g.add((pub.Organization, RDFS.subClassOf, pub.Establishment))
+    g.add((pub.Chair, RDFS.subClassOf, pub.CommitteeMember))
+    g.add((pub.Editor, RDFS.subClassOf, pub.CommitteeMember))
+    
 
     # Define Properties with domain and range
     properties = {
@@ -46,7 +48,15 @@ def create_enhanced_ontology():
         "correspondingAuthor": (pub.Author, pub.Paper),
         "reviews": (pub.Reviewer, pub.Paper),
         "presentedIn": (pub.Paper, pub.Conference),
+        "assignReviewer": (pub.CommitteeMember, pub.Reviewer),
         
+        "chair_id": (pub.Chair, XSD.string),
+        "chair_name":(pub.Chair, XSD.string),
+        "chair_review_policy": (pub.Chair, XSD.integer),
+        
+        "editor_id": (pub.Editor, XSD.string),
+        "editor_name":(pub.Editor, XSD.string),
+        "editor_review_policy": (pub.Editor, XSD.integer),
         
         
         "keyword_ID": (pub.Keyword, XSD.string),
@@ -111,8 +121,8 @@ def create_enhanced_ontology():
     }
 
     for prop, (dom, rng) in properties.items():
-        p = URIRef(f"{str(pub)}{prop}")  
-        # p = URIRef(pub[prop])
+        # p = URIRef(f"{str(pub)}{prop}")  
+        p = URIRef(pub[prop])
         g.add((p, RDF.type, RDF.Property))
         g.add((p, RDFS.domain, dom))
         g.add((p, RDFS.range, rng))
