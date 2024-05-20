@@ -1,0 +1,227 @@
+1. Find all Authors.
+
+PREFIX pub: <http://example.com/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?authorName WHERE {
+   ?author rdf:type pub:Author .
+   ?author pub:name ?authorName .
+}
+
+2. Find all properties whose domain is Author.
+
+PREFIX pub: <http://example.com/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT DISTINCT ?property WHERE {
+  ?property a rdf:Property.
+  ?property rdfs:domain pub:Author.
+}
+
+3. Find all properties whose domain is either Conference or Journal.
+
+PREFIX pub: <http://example.com/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT DISTINCT ?property WHERE {
+  ?property a rdf:Property.
+  { ?property rdfs:domain pub:Conference. }
+  UNION
+  { ?property rdfs:domain pub:Journal. }
+}
+
+
+4. Find all the papers written by a given author that where published in database conferences.
+
+PREFIX pub: <http://example.com/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT ?authorName (?title as ?paper_title) ?conferenceName  WHERE {
+  ?author a pub:Author;
+          pub:name ?authorName.
+  ?paper a pub:Paper.
+  ?conference a pub:Conference.
+
+  ?author pub:writes ?paper.
+  ?paper pub:title ?title.
+  ?paper pub:presentedIn ?conference.
+  ?conference pub:name ?conferenceName.
+
+  FILTER regex(?conferenceName, "Database", "i")
+  FILTER (?authorName = "Jorge Bernardino")
+}
+
+OR
+
+PREFIX pub: <http://example.com/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT (?pTitle AS ?paper_title) (?confName AS ?conference_name)
+WHERE {
+  ?author rdf:type pub:Author ;
+          pub:name "Jorge Bernardino" ;
+          pub:writes ?paper.
+
+  ?paper rdf:type pub:Paper ;
+         pub:title ?pTitle ;
+         pub:presentedIn ?conference.
+
+  ?conference rdf:type pub:Conference ;
+              pub:name ?confName.
+
+  FILTER regex(?confName, "Database", "i")
+}
+
+
+5.  Find all authors Who Have Published and presented in Both in Journals and Conferences
+
+PREFIX pub: <http://example.com/>
+SELECT ?authorName (?journame as ?journal_name) (?pt1 as ?Jounal_title) (?pt2 as ?conference_title) (?confname as ?conference_name) ?volume   
+WHERE {
+  ?author a pub:Author ;
+          pub:name ?authorName.
+  
+  ?paper1 a pub:Paper .
+  ?paper1 pub:title ?pt1.
+  ?paper1 pub:paperPartOfJour ?volume.
+  ?volume pub:publishedIn ?journal.
+
+  ?paper2 a pub:Paper ;
+    	  pub:title ?pt2;
+          pub:presentedIn ?conference.
+   
+  ?journal a pub:Journal.
+  ?journal pub:name ?journame.
+  ?conference a pub:Conference.
+  ?conference pub:name ?confname.
+
+  ?author pub:writes ?paper1.
+  ?author pub:writes ?paper2.
+  
+  FILTER (?journal != ?conference)
+}
+GROUP BY ?author ?authorName ?volume ?conference ?journame ?confname ?journal ?pt1 ?pt2
+HAVING (COUNT(DISTINCT ?journal) > 0 && COUNT(DISTINCT ?conference) > 0)
+
+
+6. Find most Cited Papers in a Specific Field
+
+PREFIX pub: <http://example.com/>
+SELECT ?paper ?title ?author ?authorName (COUNT(?citingPaper) AS ?citations)
+WHERE {
+  ?paper a pub:Paper;
+         pub:title ?title.
+  
+  OPTIONAL {
+    ?citingPaper pub:cites ?paper.
+  }
+
+  ?paper pub:hasKeyword ?keyword.
+  ?keyword pub:domain "Computer Science".
+
+  ?author pub:writes ?paper;
+          pub:name ?authorName.
+}
+GROUP BY ?paper ?title ?author ?authorName
+ORDER BY DESC(?citations)
+LIMIT 10
+
+
+
+7. Find Influential Authors in a Specific Research Domain
+
+PREFIX pub: <http://example.com/>
+SELECT ?author ?authorName (COUNT(?paper) AS ?papersCount)
+WHERE {
+  ?paper pub:hasKeyword ?keyword.
+  ?keyword pub:name "big data". 
+  
+  ?author pub:writes ?paper;
+          pub:name ?authorName.
+}
+GROUP BY ?author ?authorName
+ORDER BY DESC(?papersCount)
+LIMIT 20
+
+
+8. Find all author that collaborated together
+
+PREFIX pub: <http://example.com/>
+SELECT ?author1 ?authorName1 ?author2 ?authorName2 (COUNT(?paper) AS ?collaborations)
+WHERE {
+  ?author1 pub:writes ?paper;
+           pub:name ?authorName1.
+  ?author2 pub:writes ?paper;
+           pub:name ?authorName2.
+  FILTER (?author1 != ?author2)
+}
+GROUP BY ?author1 ?authorName1 ?author2 ?authorName2
+HAVING (COUNT(?paper) > 3) 
+ORDER BY DESC(?collaborations)
+LIMIT 10
+
+9. Find Most trending topic
+
+PREFIX pub: <http://example.com/>
+SELECT ?keywordName (COUNT(?paper) AS ?numberOfPapers)
+WHERE {
+  ?paper pub:hasKeyword ?keyword;
+         pub:date ?date.
+  ?keyword pub:name ?keywordName.
+  BIND(YEAR(?date) AS ?year)
+}
+GROUP BY ?year ?keywordName
+ORDER BY ?year
+
+
+10. Find Research Output by Institutions
+
+PREFIX pub: <http://example.com/>
+SELECT ?organization ?organizationName ?organizationtype (COUNT(?paper) AS ?papersCount)
+WHERE {
+  ?author pub:affiliatedWith ?organization;
+          pub:writes ?paper.
+  ?organization pub:affiliation_name ?organizationName;
+    			pub:affiliationType ?organizationtype
+}
+GROUP BY ?organization ?organizationName ?organizationtype
+ORDER BY DESC(?papersCount)
+
+11. Find authors that has cross-Disciplinary Research Detection
+
+PREFIX pub: <http://example.com/>
+SELECT ?author ?authorName (GROUP_CONCAT(DISTINCT ?keywordName; separator=", ") AS ?researchAreas)
+WHERE {
+  ?author pub:writes ?paper.
+  ?author pub:name ?authorName.
+  ?paper pub:hasKeyword ?keyword.
+  ?keyword pub:name ?keywordName.
+}
+GROUP BY ?author ?authorName
+HAVING (COUNT(DISTINCT ?keyword) > 1)
+
+
+12. Find most publication impact by Conference Attendance
+
+PREFIX pub: <http://example.com/>
+SELECT ?paper ?title (COUNT(?conference) AS ?conferenceCount)
+WHERE {
+  ?paper pub:title ?title;
+         pub:presentedIn ?conference.
+}
+GROUP BY ?paper ?title
+ORDER BY DESC(?conferenceCount)
+
+13. Find paper that was assigned a reviewer?
+
+PREFIX pub: <http://example.com/>
+SELECT ?paper ?reviewer ?editor_name ?review_policy
+WHERE {
+
+  ?paper pub:assignReviewer ?reviewer.
+  ?paper pub:editor_name ?editor_name.
+  ?paper pub:editor_review_policy ?review_policy.
+}
