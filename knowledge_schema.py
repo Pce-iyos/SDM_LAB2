@@ -12,11 +12,13 @@ def create_enhanced_ontology():
 
     # Define Classes
     classes = [
-        pub.Publication, pub.Paper, pub.Proceedings, pub.Journal,
-        pub.Event, pub.Workshop, pub.Conference,
+        pub.Publication, pub.Paper, pub.Journal,
+        pub.Event,# pub.Proceedings,
+        pub.Workshop, pub.Conference,
         pub.Person, pub.Author, pub.Reviewer,
         pub.Establishment, pub.Organization,
-        pub.Keyword, pub.CommitteeMember, pub.Chair, pub.Editor,
+        pub.Keyword, pub.CommitteeMember, pub.Volume, 
+        pub.Conf_Proceedings, pub.Work_Proceedings
     ]
     
     # Add classes to the graph
@@ -24,41 +26,51 @@ def create_enhanced_ontology():
         g.add((cls, RDF.type, RDFS.Class))
     
     # Define subclass relationships
+    
     g.add((pub.Author, RDFS.subClassOf, pub.Person))
     g.add((pub.Reviewer, RDFS.subClassOf, pub.Author))
     g.add((pub.Paper, RDFS.subClassOf, pub.Publication))
-    g.add((pub.Proceedings, RDFS.subClassOf, pub.Publication))
-    g.add((pub.Journal, RDFS.subClassOf, pub.Publication))
-    g.add((pub.Workshop, RDFS.subClassOf, pub.Event))
-    g.add((pub.Conference, RDFS.subClassOf, pub.Event))
+    # g.add((pub.Work_Proceedings, RDFS.subClassOf, pub.Publication))
+    # g.add((pub.Volume, RDFS.subClassOf, pub.Publication))
+    # g.add((pub.Event, RDFS.subClassOf, pub.Publication))
+    # g.add((pub.Workshop, RDFS.subClassOf, pub.Event))
+    # g.add((pub.Conference, RDFS.subClassOf, pub.Event))
     g.add((pub.Organization, RDFS.subClassOf, pub.Establishment))
-    g.add((pub.Chair, RDFS.subClassOf, pub.CommitteeMember))
-    g.add((pub.Editor, RDFS.subClassOf, pub.CommitteeMember))
+    # g.add((pub.Conf_Proceedings, RDFS.subClassOf, pub.Publication))
     
 
     # Define Properties with domain and range
     properties = {
+        
         "affiliatedWith": (pub.Author, pub.Organization),
         "writes": (pub.Author, pub.Paper),
-        "presentedInWork": (pub.Paper, pub.Workshop),
-        "publishedIn": (pub.Paper, pub.Journal),
-        "partOf": (pub.Event, pub.Proceedings),
+        
+        "paperPartOfjour": (pub.Paper, pub.Volume),
+        "paperPartOfconf": (pub.Paper, pub.Conf_Proceedings),
+        "paperPartOfwork": (pub.Paper, pub.Work_Proceedings),
+
+        "presentedInWork": (pub.Work_Proceedings, pub.Workshop),
+        "publishedIn": (pub.Volume, pub.Journal),
+        "presentedIn": (pub.Conf_Proceedings, pub.Conference),
+        
+        "WorkEventtype": (pub.Workshop, pub.Event),
+        "ConfEventtype": (pub.Conference, pub.Event),
+        
+        "VolumeInPub": (pub.Volume, pub.Publication),
+        "EventInPub": (pub.Event, pub.Publication),
+
+
         "hasKeyword": (pub.Paper, pub.Keyword),  
         "cites": (pub.Paper, pub.Paper),
         "correspondingAuthor": (pub.Author, pub.Paper),
         "reviews": (pub.Reviewer, pub.Paper),
-        "presentedIn": (pub.Paper, pub.Conference),
         "assignReviewer": (pub.CommitteeMember, pub.Reviewer),
         
-        "chair_id": (pub.Chair, XSD.string),
-        "chair_name":(pub.Chair, XSD.string),
-        "chair_review_policy": (pub.Chair, XSD.integer),
         
-        "editor_id": (pub.Editor, XSD.string),
-        "editor_name":(pub.Editor, XSD.string),
-        "editor_review_policy": (pub.Editor, XSD.integer),
-        
-        
+        "Conf_Proceedings_year": (pub.Conf_Proceedings, XSD.integer),
+        "work_Proceedings_year": (pub.Work_Proceedings, XSD.integer),
+        "volume_year": (pub.Volume, XSD.integer),
+  
         "keyword_ID": (pub.Keyword, XSD.string),
         "keyword_name": (pub.Keyword, XSD.string),  
         "domain": (pub.Keyword, XSD.string),
@@ -100,8 +112,6 @@ def create_enhanced_ontology():
         "jour_year": (pub.Journal, XSD.integer),
         "jour_issn": (pub.Journal, XSD.integer),
         "jour_url": (pub.Journal, XSD.string),
-        "jour_volume": (pub.Journal, XSD.integer),
-        
         
        
         "work_publicationId": (pub.Workshop, XSD.string),
@@ -121,7 +131,6 @@ def create_enhanced_ontology():
     }
 
     for prop, (dom, rng) in properties.items():
-        # p = URIRef(f"{str(pub)}{prop}")  
         p = URIRef(pub[prop])
         g.add((p, RDF.type, RDF.Property))
         g.add((p, RDFS.domain, dom))
