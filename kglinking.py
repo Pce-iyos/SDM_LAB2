@@ -78,17 +78,15 @@ def compute_statistics(graph):
 
 # Paths to your TBOX and ABOX files
 tbox_path = '/home/pce/Documents/LAB1_SDM/DATA/kgtbox.ttl'
-abox_path = '/home/pce/Documents/LAB1_SDM/DATA/abox_output.ttl'
-output_path = '/home/pce/Documents/LAB1_SDM/DATA/combined_graph.ttl'
+abox_path = '/home/pce/Documents/LAB1_SDM/DATA/abox_result.ttl'
+output_path = '/home/pce/Documents/LAB1_SDM/DATA/combined_graph_test.ttl'
 
 # Run the function with inference enabled
 load_and_link_graphs(tbox_path, abox_path, output_path, infer=True)
 
 
-
 combined_graph = Graph()
-combined_graph.parse('/home/pce/Documents/LAB1_SDM/DATA/combined_graph.ttl', format='turtle')
-
+combined_graph.parse('/home/pce/Documents/LAB1_SDM/DATA/combined_graph_test.ttl', format='turtle')
 
 # Compute and display statistics
 compute_statistics(combined_graph)
