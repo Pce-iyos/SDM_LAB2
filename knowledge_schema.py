@@ -135,6 +135,22 @@ def create_enhanced_ontology():
         g.add((p, RDF.type, RDF.Property))
         g.add((p, RDFS.domain, dom))
         g.add((p, RDFS.range, rng))
+
+    g.add((pub.EventInPub, RDF.type, RDF.Property))
+    g.add((pub.EventInPub, RDFS.subPropertyOf, pub.paperPartOfconf))
+    g.add((pub.EventInPub, RDFS.subPropertyOf, pub.paperPartOfwork))
+    g.add((pub.EventInPub, RDFS.domain, pub.Event))
+    g.add((pub.EventInPub, RDFS.range, pub.Publication))
+    
+    g.add((pub.VolumeInPub, RDF.type, RDF.Property))
+    g.add((pub.VolumeInPub, RDFS.subPropertyOf, pub.paperPartOfjour))
+    g.add((pub.VolumeInPub, RDFS.domain, pub.Volume))
+    g.add((pub.VolumeInPub, RDFS.range, pub.Publication))
+    
+    g.add((pub.correspondingAuthor, RDF.type, RDF.Property))
+    g.add((pub.correspondingAuthor, RDFS.subPropertyOf, pub.writes))
+    g.add((pub.correspondingAuthor, RDFS.domain, pub.Author))
+    g.add((pub.correspondingAuthor, RDFS.range, pub.Paper))
         
 
     return g
