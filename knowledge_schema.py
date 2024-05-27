@@ -13,7 +13,7 @@ def create_enhanced_ontology():
     # Define Classes
     classes = [
         pub.Publication, pub.Paper, pub.Journal,
-        pub.Event,# pub.Proceedings,
+        pub.Event,
         pub.Workshop, pub.Conference,
         pub.Person, pub.Author, pub.Reviewer,
         pub.Establishment, pub.Organization,
@@ -30,13 +30,7 @@ def create_enhanced_ontology():
     g.add((pub.Author, RDFS.subClassOf, pub.Person))
     g.add((pub.Reviewer, RDFS.subClassOf, pub.Author))
     g.add((pub.Paper, RDFS.subClassOf, pub.Publication))
-    # g.add((pub.Work_Proceedings, RDFS.subClassOf, pub.Publication))
-    # g.add((pub.Volume, RDFS.subClassOf, pub.Publication))
-    # g.add((pub.Event, RDFS.subClassOf, pub.Publication))
-    # g.add((pub.Workshop, RDFS.subClassOf, pub.Event))
-    # g.add((pub.Conference, RDFS.subClassOf, pub.Event))
     g.add((pub.Organization, RDFS.subClassOf, pub.Establishment))
-    # g.add((pub.Conf_Proceedings, RDFS.subClassOf, pub.Publication))
     
 
     # Define Properties with domain and range
@@ -70,6 +64,8 @@ def create_enhanced_ontology():
         "Conf_Proceedings_year": (pub.Conf_Proceedings, XSD.integer),
         "work_Proceedings_year": (pub.Work_Proceedings, XSD.integer),
         "volume_year": (pub.Volume, XSD.integer),
+        
+      
   
         "keyword_ID": (pub.Keyword, XSD.string),
         "keyword_name": (pub.Keyword, XSD.string),  
@@ -113,6 +109,7 @@ def create_enhanced_ontology():
         "jour_issn": (pub.Journal, XSD.integer),
         "jour_url": (pub.Journal, XSD.string),
         
+        
        
         "work_publicationId": (pub.Workshop, XSD.string),
         "work_name": (pub.Workshop, XSD.string),
@@ -135,7 +132,7 @@ def create_enhanced_ontology():
         g.add((p, RDF.type, RDF.Property))
         g.add((p, RDFS.domain, dom))
         g.add((p, RDFS.range, rng))
-
+        
     g.add((pub.EventInPub, RDF.type, RDF.Property))
     g.add((pub.EventInPub, RDFS.subPropertyOf, pub.paperPartOfconf))
     g.add((pub.EventInPub, RDFS.subPropertyOf, pub.paperPartOfwork))
@@ -157,10 +154,7 @@ def create_enhanced_ontology():
 
 # Generate and save the enhanced ontology
 ontology_graph = create_enhanced_ontology()
-with open("/home/pce/Documents/LAB1_SDM/DATA/kgtbox.ttl", "wb") as f:
+with open("/home/pce/Documents/LAB1_SDM/DATA/a_kgtbox.ttl", "wb") as f:
     f.write(ontology_graph.serialize(format="turtle").encode('utf-8'))
 
 
-# Save to JSON-LD
-with open("/home/pce/Documents/LAB1_SDM/DATA/kgtbox.json", "w") as f:
-    f.write(ontology_graph.serialize(format="json-ld"))
