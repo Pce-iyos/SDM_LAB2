@@ -150,18 +150,21 @@ LIMIT 20
 8. Find all author that collaborated together
 
 PREFIX pub: <http://example.com/>
-SELECT ?author1 ?authorName1 ?author2 ?authorName2 (COUNT(?paper) AS ?collaborations)
+SELECT ?authorName1 ?authorName2 (COUNT(?paper) AS ?collaborations)
 WHERE {
   ?author1 pub:writes ?paper;
-           pub:name ?authorName1.
+           pub:name ?name1.
   ?author2 pub:writes ?paper;
-           pub:name ?authorName2.
+           pub:name ?name2.
   FILTER (?author1 != ?author2)
+  BIND(IF(?name1 < ?name2, ?name1, ?name2) AS ?authorName1)
+  BIND(IF(?name1 < ?name2, ?name2, ?name1) AS ?authorName2)
 }
-GROUP BY ?author1 ?authorName1 ?author2 ?authorName2
-HAVING (COUNT(?paper) > 3) 
+GROUP BY ?authorName1 ?authorName2
+HAVING (COUNT(?paper) > 3)
 ORDER BY DESC(?collaborations)
 LIMIT 10
+
 
 9. Find Most trending topic
 
