@@ -110,10 +110,11 @@ HAVING (COUNT(DISTINCT ?journal) > 0 && COUNT(DISTINCT ?conference) > 0)
 6. Find most Cited Papers in a Specific Field
 
 PREFIX pub: <http://example.com/>
-SELECT ?paper ?title ?author ?authorName (COUNT(?citingPaper) AS ?citations)
+SELECT ?title ?citations (group_concat(?authorName) as ?authors) where {
+SELECT ?title ?authorName (count(?citingPaper) AS ?citations)
 WHERE {
   ?paper a pub:Paper;
-         pub:title ?title.
+         pub:title ?title. 
   
   OPTIONAL {
     ?citingPaper pub:cites ?paper.
@@ -125,9 +126,10 @@ WHERE {
   ?author pub:writes ?paper;
           pub:name ?authorName.
 }
-GROUP BY ?paper ?title ?author ?authorName
-ORDER BY DESC(?citations)
-LIMIT 10
+GROUP BY  ?title ?authorName
+}
+GROUP BY ?title ?citations
+
 
 
 
