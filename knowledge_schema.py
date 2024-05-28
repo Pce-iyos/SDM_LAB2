@@ -154,7 +154,7 @@ def create_enhanced_ontology():
 
 # Generate and save the enhanced ontology
 ontology_graph = create_enhanced_ontology()
-with open("/home/pce/Documents/LAB1_SDM/DATA/a_kgtbox.ttl", "wb") as f:
+with open("./DATA/a_kgtbox.ttl", "wb") as f:
     f.write(ontology_graph.serialize(format="turtle").encode('utf-8'))
 
 

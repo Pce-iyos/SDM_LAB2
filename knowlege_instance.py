@@ -20,7 +20,7 @@ def create_abox(pub):
     }
 
     for filename, (class_uri, id_field, attributes) in entity_files.items():
-        with open(f'/home/pce/Documents/LAB1_SDM/DATA/CSV_files/{filename}', 'r') as csvfile:
+        with open(f'./DATA/CSV_files/{filename}', 'r') as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
                 entity = URIRef(pub[urllib.parse.quote(row[id_field])])
@@ -88,7 +88,7 @@ def create_abox(pub):
     }
 
     for file_name, config in relationship_files.items():
-        with open(f'/home/pce/Documents/LAB1_SDM/DATA/CSV_files/{file_name}', 'r', newline='') as csvfile:
+        with open(f'./DATA/CSV_files/{file_name}', 'r', newline='') as csvfile:
             reader = csv.DictReader(csvfile)
             subj_info = config['subjects']
             obj_info = config['objects']
@@ -107,7 +107,7 @@ def create_abox(pub):
                         
 
     # Handling chair and editor assignments
-    with open('/home/pce/Documents/LAB1_SDM/DATA/CSV_files/chair_assign_reviewer.csv', 'r') as csvfile:
+    with open('./DATA/CSV_files/chair_assign_reviewer.csv', 'r') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
             chair_id = URIRef(pub[urllib.parse.quote(row['START_ID'])])
@@ -118,7 +118,7 @@ def create_abox(pub):
             g.add((chair_id, pub.chair_name, Literal(row['conferenceChair'], datatype=XSD.string)))
             g.add((chair_id, pub.chair_review_policy, Literal(row['reviewPolicy'], datatype=XSD.integer)))
 
-    with open('/home/pce/Documents/LAB1_SDM/DATA/CSV_files/editor_assign_reviewer.csv', 'r') as csvfile:
+    with open('./DATA/CSV_files/editor_assign_reviewer.csv', 'r') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
             editor_id = URIRef(pub[urllib.parse.quote(row['START_ID'])])
@@ -135,7 +135,7 @@ def create_volume_instances(g, pub):
     
     volume_dict = {}
     # Extract volume and year from journal.csv
-    with open('/home/pce/Documents/LAB1_SDM/DATA/CSV_files/journal.csv', 'r') as csvfile:
+    with open('./DATA/CSV_files/journal.csv', 'r') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
             volume_id = f"{row['publicationId']}_volume_{row['volume']}"
@@ -163,7 +163,7 @@ def create_volume_instances(g, pub):
 
 def add_event_types(g, pub):
     # Extract event types from proceedings.csv
-    with open('/home/pce/Documents/LAB1_SDM/DATA/CSV_files/proceedings.csv', 'r') as csvfile:
+    with open('./DATA/CSV_files/proceedings.csv', 'r') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
             proceeding_uri = URIRef(pub[urllib.parse.quote(row['ID'])])
@@ -182,7 +182,7 @@ def add_event_types(g, pub):
 
 def extract_paper_info():
     paper_info = {}
-    with open('/home/pce/Documents/LAB1_SDM/DATA/CSV_files/paper_published_in_journal.csv', 'r') as csvfile:
+    with open('./DATA/CSV_files/paper_published_in_journal.csv', 'r') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
             paper_id = row['START_ID']
@@ -211,7 +211,7 @@ def link_events_to_publications(g, pub):
     }
     
     for filename, class_uri in event_files.items():
-        with open(f'/home/pce/Documents/LAB1_SDM/DATA/CSV_files/{filename}', 'r') as csvfile:
+        with open(f'./DATA/CSV_files/{filename}', 'r') as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
                 event_uri = URIRef(pub[urllib.parse.quote(row['publicationId'])])
@@ -235,6 +235,6 @@ abox_graph = link_papers_to_volumes(abox_graph, pub, paper_info, volume_dict)
 
 # abox_graph = link_papers_to_volumes(abox_graph, Namespace("http://example.com/"), volume_dict)
 abox_graph = link_events_to_publications(abox_graph, pub)
-abox_graph.serialize(destination='//home/pce/Documents/LAB1_SDM/DATA/abox_result.ttl', format='turtle')
+abox_graph.serialize(destination='./DATA/abox_result.ttl', format='turtle')
     
     
