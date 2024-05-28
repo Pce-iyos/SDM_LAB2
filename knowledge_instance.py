@@ -20,7 +20,7 @@ def create_abox(pub):
     }
 
     for filename, (class_uri, id_field, attributes) in entity_files.items():
-        with open(f'./DATA/CSV_files/{filename}', 'r') as csvfile:
+        with open(f'./DATA/CSV_files/{filename}', 'r', encoding='utf8') as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
                 entity = URIRef(pub[urllib.parse.quote(row[id_field])])
@@ -135,7 +135,7 @@ def create_volume_instances(g, pub):
     
     volume_dict = {}
     # Extract volume and year from journal.csv
-    with open('./DATA/CSV_files/journal.csv', 'r') as csvfile:
+    with open('./DATA/CSV_files/journal.csv', 'r', encoding='utf8') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
             volume_id = f"{row['publicationId']}_volume_{row['volume']}"
@@ -163,7 +163,7 @@ def create_volume_instances(g, pub):
 
 def add_event_types(g, pub):
     # Extract event types from proceedings.csv
-    with open('./DATA/CSV_files/proceedings.csv', 'r') as csvfile:
+    with open('./DATA/CSV_files/proceedings.csv', 'r', encoding='utf8') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
             proceeding_uri = URIRef(pub[urllib.parse.quote(row['ID'])])
