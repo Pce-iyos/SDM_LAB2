@@ -228,3 +228,4 @@ abox_graph = link_events_to_publications(abox_graph, pub)
 
 # Serialize the final graph to a file
 abox_graph.serialize(destination='/home/pce/Documents/LAB1_SDM/DATA/abox_result.ttl', format='turtle')
+ 
